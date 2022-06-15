@@ -1,5 +1,6 @@
 import React, { useState, PropsWithChildren } from "react";
 import Head from "next/head";
+import Router from "next/router";
 import AppBar from "@mui/material/AppBar";
 import Divider from "@mui/material/Divider";
 import Icon from "@mui/material/Icon";
@@ -13,6 +14,7 @@ import useScrollTrigger from "@mui/material/useScrollTrigger";
 
 import { NextLinkComposed } from "../NextLinkMaterial";
 import { IAccount } from "../../shared/models/Account";
+import fetchJson from "../../lib/fetch";
 
 function Copyright() {
   return (
@@ -40,6 +42,11 @@ const Layout: React.FC<PropsWithChildren<ILayoutProps>> = (props) => {
   async function logout() {
     try {
       setLoggingOut(true);
+      await fetchJson("/api/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+      await Router.push("/login");
     } finally {
       setLoggingOut(false);
     }
