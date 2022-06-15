@@ -5,6 +5,7 @@ import { sessionOptions } from "../../lib/session";
 import { IAccount } from "../../shared/models/Account";
 import AccountSchema from "../../shared/schema/Account.schema";
 import dbMiddleware from "./middleware/db";
+import { validatePassword } from "../../lib/password";
 
 const handler = nextConnect();
 
@@ -15,15 +16,18 @@ async function loginController(req: NextApiRequest, res: NextApiResponse) {
     await req.body;
   try {
     const data = await AccountSchema.findOne({ email });
+
     if (data) {
       // validate password
-      if (data.password !== password) {
+      const isPasswordValid = await validatePassword(password, data.password);
+
+      if (!isPasswordValid) {
         res.status(403).json({ message: "invalid password" });
         return;
       }
       //
 
-      const user: Partial<IAccount> = { email: data.email };
+      const user: Partial<IAccount> = { email: data.email, _id: data._id };
 
       req.session.user = user;
 
