@@ -20,6 +20,7 @@ import {
 import VideoSchema from "../shared/schema/Video.schema";
 import CardMediaIframe from "../components/CardMediaIframe";
 import VirtualizedList from "../components/VirtualizedList";
+import dbConnect from "../lib/mongodb";
 
 const HomePage: NextPage = () => {
   const { data: videos } = useSWR<IVideo[]>("/api/videos");
@@ -136,34 +137,48 @@ const HomePage: NextPage = () => {
 export const getServerSideProps = withIronSessionSsr<
   PageWithPreloadedData & PageWithUser
 >(async function ({ res, req }) {
-  res.setHeader(
-    "Cache-Control",
-    "public, s-maxage=10, stale-while-revalidate=59"
-  );
+  try {
+    res.setHeader(
+      "Cache-Control",
+      "public, s-maxage=10, stale-while-revalidate=59"
+    );
 
-  const user = req.session.user;
+    const user = req.session.user;
 
-  // pre-fetch videos
+    // pre-fetch videos
 
-  const videoDocs = await VideoSchema.find();
+    await dbConnect();
 
-  const videos =
-    videoDocs?.map((vid) => ({
-      _id: vid._id?.toString(),
-      url: vid.url,
-      title: vid.title ?? "",
-      description: vid.description ?? "",
-      sharerId: vid.sharerId.toString(),
-    })) ?? [];
+    const videoDocs = await VideoSchema.find();
 
-  return {
-    props: {
-      user: user ?? null,
-      fallback: {
-        "/api/videos": videos,
+    const videos =
+      videoDocs?.map((vid) => ({
+        _id: vid._id?.toString(),
+        url: vid.url,
+        title: vid.title ?? "",
+        description: vid.description ?? "",
+        sharerId: vid.sharerId.toString(),
+      })) ?? [];
+
+    return {
+      props: {
+        user: user ?? null,
+        fallback: {
+          "/api/videos": videos,
+        },
       },
-    },
-  };
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      props: {
+        user: null,
+        fallback: {
+          "/api/videos": [],
+        },
+      },
+    };
+  }
 }, sessionOptions);
 
 export default HomePage;
