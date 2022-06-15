@@ -12,8 +12,17 @@ import { IVideo } from "../shared/models/Video";
 
 export const getServerSideProps = withIronSessionSsr<PageWithUser>(function ({
   req,
+  res,
 }) {
   const user = req.session.user;
+  if (!user) {
+    res.setHeader("location", "/login");
+    res.end();
+    return {
+      props: {},
+    };
+  }
+
   return {
     props: { user },
   };
