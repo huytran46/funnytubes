@@ -2,7 +2,10 @@ export default async function fetchJson<JSON = unknown>(
   input: RequestInfo,
   init?: RequestInit
 ): Promise<JSON> {
-  const response = await fetch(input, init);
+  const response = await fetch(input, {
+    headers: { "Content-Type": "application/json" },
+    ...init,
+  });
 
   const data = await response.json();
 
