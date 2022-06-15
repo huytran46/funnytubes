@@ -5,5 +5,9 @@ export type NolayoutPage = {
 };
 
 export type PageWithUser = {
-  user?: Partial<IAccount>;
+  user?: Partial<IAccount> | null;
+};
+
+export type PageWithPreloadedData = {
+  fallback?: Record<string, any>;
 };
