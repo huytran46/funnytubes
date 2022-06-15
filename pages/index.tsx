@@ -1,22 +1,31 @@
+import type { IVideo } from "../shared/models/Video";
 import type { NextPage } from "next";
+import useSWR from "swr";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import { withIronSessionSsr } from "iron-session/next";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { NextLinkComposed } from "../components/NextLinkMaterial";
 import { sessionOptions } from "../lib/session";
-import { PageWithUser } from "../shared/models/PageProps.type";
-
-const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+import {
+  PageWithPreloadedData,
+  PageWithUser,
+} from "../shared/models/PageProps.type";
+import VideoSchema from "../shared/schema/Video.schema";
+import CardMediaIframe from "../components/CardMediaIframe";
+import VirtualizedList from "../components/VirtualizedList";
 
 const HomePage: NextPage = () => {
+  const { data: videos } = useSWR<IVideo[]>("/api/videos");
+  const theme = useTheme();
+  const matchesSMScreenSize = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
     <>
       <Box
@@ -73,43 +82,60 @@ const HomePage: NextPage = () => {
           </Stack>
         </Container>
       </Box>
+      {/* End hero unit */}
       <Container sx={{ py: 8 }} maxWidth="md">
-        {/* End hero unit */}
-        <Grid container spacing={4}>
-          {cards.map((card) => (
-            <Grid item key={card} xs={12} sm={6} md={4}>
-              <Card sx={{ display: "flex", flexDirection: "column" }}>
-                <CardMedia
-                  component="img"
-                  image="images/fancy-dog.jpg"
-                  alt="random"
-                />
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Typography gutterBottom variant="h5" component="h2">
-                    Heading
-                  </Typography>
-                  <Typography>
-                    This is a media card. You can use this section to describe
-                    the content.
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button size="small">View</Button>
-                  <Button size="small">Edit</Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+        <VirtualizedList
+          height={1200}
+          width={matchesSMScreenSize ? theme.breakpoints.values.xl : 900}
+          itemCount={videos?.length ?? 10}
+          itemSize={275}
+          itemData={videos}
+        >
+          {(props) => {
+            const { index, style, data } = props;
+            const vid = data[index];
+            return (
+              <Box
+                key={index}
+                style={style}
+                sx={{
+                  p: 4,
+                }}
+              >
+                <Card
+                  variant="outlined"
+                  sx={{
+                    display: "flex",
+                    borderRadius: 4,
+                  }}
+                >
+                  <CardMediaIframe
+                    isLoading={vid == null}
+                    shareLink={vid?.url}
+                  />
+                  <CardContent
+                    sx={{
+                      flexGrow: 1,
+                    }}
+                  >
+                    <Typography gutterBottom variant="h5" component="h3">
+                      {vid?.title}
+                    </Typography>
+                    <Typography variant="body1">{vid?.description}</Typography>
+                  </CardContent>
+                </Card>
+              </Box>
+            );
+          }}
+        </VirtualizedList>
       </Container>
     </>
   );
 };
 
-export const getServerSideProps = withIronSessionSsr<PageWithUser>(function ({
-  res,
-  req,
-}) {
+export const getServerSideProps = withIronSessionSsr<
+  PageWithPreloadedData & PageWithUser
+>(async function ({ res, req }) {
   res.setHeader(
     "Cache-Control",
     "public, s-maxage=10, stale-while-revalidate=59"
@@ -117,16 +143,27 @@ export const getServerSideProps = withIronSessionSsr<PageWithUser>(function ({
 
   const user = req.session.user;
 
-  if (user) {
-    return {
-      props: { user },
-    };
-  }
+  // pre-fetch videos
+
+  const videoDocs = await VideoSchema.find();
+
+  const videos =
+    videoDocs?.map((vid) => ({
+      _id: vid._id?.toString(),
+      url: vid.url,
+      title: vid.title ?? "",
+      description: vid.description ?? "",
+      sharerId: vid.sharerId.toString(),
+    })) ?? [];
 
   return {
-    props: {},
+    props: {
+      user: user ?? null,
+      fallback: {
+        "/api/videos": videos,
+      },
+    },
   };
-},
-sessionOptions);
+}, sessionOptions);
 
 export default HomePage;
