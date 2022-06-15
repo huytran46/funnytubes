@@ -75,7 +75,6 @@ const ShareForm: React.FC<Props> = (props) => {
       const chunks = data?.url?.split("/");
       const videoKey = chunks?.[chunks?.length - 1];
       data = { ...data, url: `https://www.youtube.com/embed/${videoKey}` };
-      console.log("data:", data);
       await props.handleSubmit(data);
       resetForm();
     } catch (error) {
