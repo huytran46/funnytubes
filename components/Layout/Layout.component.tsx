@@ -68,8 +68,27 @@ const Layout: React.FC<PropsWithChildren<ILayoutProps>> = (props) => {
             alignItems="center"
             spacing={2}
           >
-            <Icon sx={{ mr: 2 }}>photo_camera</Icon>
-            <Typography variant="h6" color="inherit" noWrap>
+            <Icon
+              component={NextLinkComposed}
+              to={{
+                pathname: "/",
+              }}
+              sx={{ mr: 2 }}
+            >
+              live_tv
+            </Icon>
+            <Typography
+              component={NextLinkComposed}
+              variant="h6"
+              color="inherit"
+              noWrap
+              to={{
+                pathname: "/",
+              }}
+              sx={{
+                textDecoration: "none",
+              }}
+            >
               Funnytubes
             </Typography>
             <Box sx={{ flex: 2 }} />
@@ -104,9 +123,15 @@ const Layout: React.FC<PropsWithChildren<ILayoutProps>> = (props) => {
                   to="/login"
                   variant="contained"
                 >
-                  Signin
+                  Sign in
                 </Button>
-                <Button variant="outlined">Register</Button>
+                <Button
+                  component={NextLinkComposed}
+                  to="/signup"
+                  variant="outlined"
+                >
+                  Create new account
+                </Button>
               </>
             )}
           </Stack>
