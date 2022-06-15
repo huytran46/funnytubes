@@ -6,5 +6,5 @@ const AccountSchema = new mongoose.Schema<IAccount>({
   password: String,
 });
 
-export default mongoose.models.Account ??
+export default (mongoose.models.Account as mongoose.Model<IAccount>) ??
   mongoose.model("Account", AccountSchema);
