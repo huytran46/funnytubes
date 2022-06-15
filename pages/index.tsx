@@ -1,5 +1,5 @@
 import type { NextPage } from "next";
-import Head from "next/head";
+import { withIronSessionSsr } from "iron-session/next";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
@@ -11,6 +11,8 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { NextLinkComposed } from "../components/NextLinkMaterial";
+import { sessionOptions } from "../lib/session";
+import { PageWithUser } from "../shared/models/PageProps.type";
 
 const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
@@ -79,7 +81,7 @@ const HomePage: NextPage = () => {
               <Card sx={{ display: "flex", flexDirection: "column" }}>
                 <CardMedia
                   component="img"
-                  image="https://source.unsplash.com/random"
+                  image="images/fancy-dog.jpg"
                   alt="random"
                 />
                 <CardContent sx={{ flexGrow: 1 }}>
@@ -103,5 +105,28 @@ const HomePage: NextPage = () => {
     </>
   );
 };
+
+export const getServerSideProps = withIronSessionSsr<PageWithUser>(function ({
+  res,
+  req,
+}) {
+  res.setHeader(
+    "Cache-Control",
+    "public, s-maxage=10, stale-while-revalidate=59"
+  );
+
+  const user = req.session.user;
+
+  if (user) {
+    return {
+      props: { user },
+    };
+  }
+
+  return {
+    props: {},
+  };
+},
+sessionOptions);
 
 export default HomePage;

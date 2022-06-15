@@ -1,9 +1,9 @@
 import { useState } from "react";
-import type { NextPage, GetStaticProps } from "next";
 import Router from "next/router";
-
+import type { NextPage } from "next";
+import { withIronSessionSsr } from "iron-session/next";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
+import LoadingButton from "@mui/lab/LoadingButton";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
@@ -14,44 +14,58 @@ import Box from "@mui/material/Box";
 import Icon from "@mui/material/Icon";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import fetchJson, { FetchError } from "../lib/fetch";
+import { sessionOptions } from "../lib/session";
+import type { NolayoutPage } from "../shared/models/PageProps.type";
 
-import { useUser } from "../shared/hooks/use-user.hook";
+export const getServerSideProps = withIronSessionSsr<NolayoutPage>(function ({
+  req,
+  res,
+}) {
+  const user = req.session.user;
 
-export const getStaticProps: GetStaticProps = async (context) => {
+  if (user) {
+    res.setHeader("location", "/");
+    res.statusCode = 302;
+    res.end();
+    return {
+      props: {},
+    };
+  }
+
   return {
-    props: {
-      noLayout: true,
-    }, // will
+    props: { noLayout: true },
   };
-};
+},
+sessionOptions);
 
 const LoginPage: NextPage = () => {
-  useUser({ redirectTo: "/", redirectIfFound: true });
-
+  const [isLogin, setIsLogin] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const body = {
-      username: data.get("username")?.toString() ?? "",
-      password: data.get("password")?.toString() ?? "",
-    };
-
     try {
-      const res = await fetch("/api/login", {
+      setIsLogin(true);
+      const data = new FormData(event.currentTarget);
+      const body = {
+        email: data.get("email")?.toString() ?? "",
+        password: data.get("password")?.toString() ?? "",
+      };
+      await fetchJson("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      if (res.ok) {
-        Router.push("/");
-      } else {
-        throw new Error(await res.text());
-      }
+      await Router.push("/");
     } catch (error) {
-      console.error("An unexpected error happened occurred:", error);
-      setErrorMsg((error as any)?.message);
+      if (error instanceof FetchError) {
+        setErrorMsg(error.data.message);
+      } else {
+        console.error("An unexpected error happened:", error);
+      }
+    } finally {
+      setIsLogin(false);
     }
   };
 
@@ -79,10 +93,10 @@ const LoginPage: NextPage = () => {
             margin="normal"
             required
             fullWidth
-            id="username"
+            id="email"
             label="Email"
-            name="username"
-            autoComplete="username"
+            name="email"
+            autoComplete="email"
             autoFocus
           />
           <TextField
@@ -95,21 +109,24 @@ const LoginPage: NextPage = () => {
             id="password"
             autoComplete="current-password"
           />
+
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
           />
-          <Button
+
+          <LoadingButton
             type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
+            loading={isLogin}
           >
-            Sign In
-          </Button>
+            Sign in
+          </LoadingButton>
           <Grid container>
             <Grid item>
-              <Link href="#" variant="body2">
+              <Link href="/signup" variant="body2">
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>
