@@ -22,6 +22,11 @@ export const getServerSideProps = withIronSessionSsr<NolayoutPage>(function ({
 }) {
   const user = req.session.user;
 
+  res.setHeader(
+    "Cache-Control",
+    "public, s-maxage=10, stale-while-revalidate=59"
+  );
+  
   if (user) {
     res.setHeader("location", "/");
     res.statusCode = 302;
