@@ -5,8 +5,6 @@ import { withIronSessionSsr } from "iron-session/next";
 import Avatar from "@mui/material/Avatar";
 import LoadingButton from "@mui/lab/LoadingButton";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Alert from "@mui/material/Alert";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
@@ -108,11 +106,6 @@ const LoginPage: NextPage = () => {
             type="password"
             id="password"
             autoComplete="current-password"
-          />
-
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
           />
 
           <LoadingButton
