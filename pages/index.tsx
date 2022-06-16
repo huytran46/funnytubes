@@ -74,7 +74,7 @@ const HomePage: NextPage = () => {
               size="large"
               component={NextLinkComposed}
               to={{
-                pathname: "/login",
+                pathname: "/share",
               }}
               variant="contained"
             >
