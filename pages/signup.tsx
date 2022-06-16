@@ -25,7 +25,7 @@ export const getServerSideProps = withIronSessionSsr<NolayoutPage>(function ({
     "Cache-Control",
     "public, s-maxage=10, stale-while-revalidate=59"
   );
-  
+
   if (user) {
     res.setHeader("location", "/");
     res.statusCode = 302;
@@ -157,8 +157,8 @@ const SignupPage: NextPage = () => {
       >
         <Typography variant="body2" color="text.secondary" align="center">
           {"Copyright © "}
-          <Link color="inherit" href="https://mui.com/">
-            Your Website
+          <Link color="inherit" href="/">
+            Funnytubes
           </Link>{" "}
           {new Date().getFullYear()}
           {"."}
