@@ -13,6 +13,10 @@ import { styled } from "@mui/material/styles";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
+import LinkIcon from '@mui/icons-material/Link';
+import TitleIcon from '@mui/icons-material/Title';
+import DescriptionIcon from '@mui/icons-material/Description';
+import { IFormInputs } from "./ShareForm.type";
 
 const StyledShareForm = styled(Paper)<PaperProps>(({ theme }) => ({
   padding: theme.spacing(6),
@@ -20,11 +24,7 @@ const StyledShareForm = styled(Paper)<PaperProps>(({ theme }) => ({
   width: "fit-content",
 }));
 
-interface IFormInputs {
-  url: string;
-  title: string;
-  description: string;
-}
+
 
 const schema = z
   .object({
@@ -83,7 +83,7 @@ const ShareForm: React.FC<Props> = (props) => {
   };
 
   return (
-    <StyledShareForm variant="outlined">
+    <StyledShareForm variant="outlined" data-testid="share-from">
       <Stack direction="row" alignItems="center">
         <Stack direction="column" sx={{ gap: 1, minWidth: 300 }}>
           <Divider>
@@ -114,24 +114,24 @@ const ShareForm: React.FC<Props> = (props) => {
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Icon>link</Icon>
+                    <LinkIcon />
                   </InputAdornment>
                 ),
               }}
               fullWidth
               label="Youtube URL"
-              type="url"
+              type="text"
               error={Boolean(errors.url)}
               helperText={errors.url?.message}
-              required
               {...register("url")}
+              aria-label="share-form-url-text-field"
             />
 
             <TextField
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Icon>title</Icon>
+                    <TitleIcon />
                   </InputAdornment>
                 ),
               }}
@@ -140,15 +140,15 @@ const ShareForm: React.FC<Props> = (props) => {
               type="text"
               error={Boolean(errors.title)}
               helperText={errors.title?.message}
-              required
               {...register("title")}
+              aria-label="share-form-title-text-field"
             />
 
             <TextField
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <Icon>description</Icon>
+                    <DescriptionIcon />
                   </InputAdornment>
                 ),
               }}
@@ -157,8 +157,8 @@ const ShareForm: React.FC<Props> = (props) => {
               type="text"
               error={Boolean(errors.description)}
               helperText={errors.description?.message}
-              required
               {...register("description")}
+              aria-label="share-form-description-text-field"
             />
 
             <LoadingButton
@@ -167,6 +167,7 @@ const ShareForm: React.FC<Props> = (props) => {
               variant="contained"
               color="error"
               loading={props.isLoading}
+              aria-label="share-form-submit-button"
             >
               Share
             </LoadingButton>
@@ -196,6 +197,7 @@ const ShareForm: React.FC<Props> = (props) => {
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
+            aria-label="share-form-preview-iframe"
             sx={{
               borderRadius: 4,
             }}
