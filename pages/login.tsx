@@ -11,7 +11,7 @@ import Alert from "@mui/material/Alert";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import Icon from "@mui/material/Icon";
+import LockIcon from '@mui/icons-material/Lock';
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import fetchJson, { FetchError } from "../lib/fetch";
@@ -80,7 +80,7 @@ const LoginPage: NextPage = () => {
         }}
       >
         <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
-          <Icon>lock_outlined</Icon>
+          <LockIcon/>
         </Avatar>
         <Typography component="h1" variant="h5">
           Sign in

@@ -3,14 +3,12 @@ import Head from "next/head";
 import Router from "next/router";
 import AppBar from "@mui/material/AppBar";
 import Divider from "@mui/material/Divider";
-import Icon from "@mui/material/Icon";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Stack from "@mui/material/Stack";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import LiveTvIcon from '@mui/icons-material/LiveTv';
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 
 import { NextLinkComposed } from "../NextLinkMaterial";
@@ -69,13 +67,6 @@ const Layout: React.FC<PropsWithChildren<ILayoutProps>> = (props) => {
             alignItems="center"
             spacing={2}
           >
-            <LiveTvIcon
-              component={NextLinkComposed}
-              to={{
-                pathname: "/",
-              }}
-              sx={{ mr: 2 }}
-            />
             <Typography
               component={NextLinkComposed}
               variant="h6"
