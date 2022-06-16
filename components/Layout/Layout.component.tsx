@@ -10,7 +10,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import Stack from "@mui/material/Stack";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import LiveTVICon from '@mui/icons-material/LiveTV';
+import LiveTvIcon from '@mui/icons-material/LiveTv';
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 
 import { NextLinkComposed } from "../NextLinkMaterial";
@@ -69,7 +69,7 @@ const Layout: React.FC<PropsWithChildren<ILayoutProps>> = (props) => {
             alignItems="center"
             spacing={2}
           >
-            <LiveTVICon
+            <LiveTvIcon
               component={NextLinkComposed}
               to={{
                 pathname: "/",
