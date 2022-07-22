@@ -45,7 +45,7 @@ const HomePage: NextPage = () => {
             fontWeight="bold"
             gutterBottom
           >
-            Funnytubes
+            Simplag Website 2
           </Typography>
           <Typography
             component="h1"
