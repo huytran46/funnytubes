@@ -133,7 +133,7 @@ const Layout: React.FC<PropsWithChildren<ILayoutProps>> = (props) => {
       {/* Footer */}
       <Box sx={{ bgcolor: "background.paper", p: 6 }} component="footer">
         <Typography variant="h6" align="center" gutterBottom>
-          Footer
+          Funnytubes
         </Typography>
         <Typography
           variant="subtitle1"
@@ -141,7 +141,7 @@ const Layout: React.FC<PropsWithChildren<ILayoutProps>> = (props) => {
           color="text.secondary"
           component="p"
         >
-          Something here to give the footer a purpose!
+          Author: tranquochuy4698@gmail.com
         </Typography>
         <Copyright />
       </Box>
